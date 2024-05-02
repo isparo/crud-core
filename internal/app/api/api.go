@@ -1,7 +1,9 @@
 package api
 
 import (
-	"crud-core/internal/app/api/handler"
+	"crud-core/internal/app/api/controller"
+	"crud-core/internal/app/api/service"
+	"crud-core/internal/infrastructure/persistency"
 	"net/http"
 )
 
@@ -24,7 +26,10 @@ func newAPIV1(clientHandler clientHandler) apiV1 {
 }
 
 func LoadAPI() {
-	clientHandler := handler.NewClientHandler()
+	clientRepo := persistency.NewInMemoryRepository()
+
+	clientService := service.NewClientService(clientRepo)
+	clientHandler := controller.NewClientHandler(clientService)
 	apiV1 := newAPIV1(clientHandler)
 	apiV1.LoadRoutes()
 }

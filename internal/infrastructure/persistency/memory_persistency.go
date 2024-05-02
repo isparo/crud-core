@@ -1,34 +1,34 @@
 package persistency
 
 import (
-	"crud-core/internal/domain/client"
+	"crud-core/internal/app/api/model"
 	"errors"
 	"sync"
 	"time"
 )
 
 type inMemoryRepository struct {
-	dataStorage map[int]client.Client
+	dataStorage map[int]model.Client
 	mtx         sync.Mutex
 }
 
-func NewInMemoryRepository() inMemoryRepository {
-	return inMemoryRepository{
-		dataStorage: make(map[int]client.Client),
+func NewInMemoryRepository() *inMemoryRepository {
+	return &inMemoryRepository{
+		dataStorage: make(map[int]model.Client),
 	}
 }
 
-func (r *inMemoryRepository) Create(client client.Client) error {
+func (r *inMemoryRepository) Create(client model.Client) error {
 	r.mtx.Lock()
 	defer r.mtx.Unlock()
-
-	client.ID = int(time.Now().UnixNano())
-	r.dataStorage[client.ID] = client
+	id := int(time.Now().UnixNano())
+	client.ID = &id
+	r.dataStorage[*client.ID] = client
 
 	return nil
 }
 
-func (r *inMemoryRepository) GetByID(id int) (*client.Client, error) {
+func (r *inMemoryRepository) GetByID(id int) (*model.Client, error) {
 	r.mtx.Lock()
 	defer r.mtx.Unlock()
 
@@ -54,15 +54,15 @@ func (r *inMemoryRepository) Delete(id int) error {
 	return nil
 }
 
-func (r *inMemoryRepository) Update(client client.Client) error {
+func (r *inMemoryRepository) Update(client model.Client) error {
 	r.mtx.Lock()
 	defer r.mtx.Unlock()
 
-	if _, ok := r.dataStorage[client.ID]; !ok {
+	if _, ok := r.dataStorage[*client.ID]; !ok {
 		return errors.New("client not found")
 	}
 
-	r.dataStorage[client.ID] = client
+	r.dataStorage[*client.ID] = client
 
 	return nil
 }
