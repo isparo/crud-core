@@ -1,7 +1,9 @@
 package controller
 
 import (
+	"crud-core/internal/app/api/controller/dto"
 	"crud-core/internal/app/api/model"
+	"encoding/json"
 	"log"
 	"net/http"
 )
@@ -26,6 +28,15 @@ func NewClientHandler(clientSvc ClientService) clientHandler {
 
 func (ch clientHandler) Create(w http.ResponseWriter, r *http.Request) {
 	log.Println("On create handler")
+	var data dto.Client
+
+	err := json.NewDecoder(r.Body).Decode(&data)
+	if err != nil {
+		http.Error(w, "Error al decodificar el cuerpo de la solicitud JSON", http.StatusBadRequest)
+		return
+	}
+
+	log.Println(data)
 
 	//ch.clientService.Create()
 }
