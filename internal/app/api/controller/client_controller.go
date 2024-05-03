@@ -2,7 +2,6 @@ package controller
 
 import (
 	"crud-core/internal/app/api/controller/dto"
-	"crud-core/internal/app/api/model"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -12,10 +11,10 @@ import (
 
 type ClientService interface {
 	Create(name string, email string) error
-	GetByID(id int) (*model.Client, error)
+	GetByID(id int) (*dto.Client, error)
 	Delete(id int) error
 	Update(id int, name string, email string) error
-	GetClients() ([]model.Client, error)
+	GetClients() ([]dto.Client, error)
 }
 
 type clientHandler struct {

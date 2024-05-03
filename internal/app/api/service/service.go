@@ -1,6 +1,7 @@
 package service
 
 import (
+	"crud-core/internal/app/api/controller/dto"
 	"crud-core/internal/app/api/model"
 	"log"
 )
@@ -31,9 +32,14 @@ func (cs clientService) Create(name string, email string) error {
 
 	return nil
 }
-func (cs clientService) GetByID(id int) (*model.Client, error) {
+func (cs clientService) GetByID(id int) (*dto.Client, error) {
 
-	return cs.clientRepository.GetByID(id)
+	client, err := cs.clientRepository.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dto.Client{client.ID, client.Name, client.Email}, nil
 }
 func (cs clientService) Delete(id int) error {
 	return nil
@@ -45,6 +51,17 @@ func (cs clientService) Update(id int, name string, email string) error {
 	return cs.clientRepository.Update(client)
 }
 
-func (cs clientService) GetClients() ([]model.Client, error) {
-	return cs.clientRepository.List()
+func (cs clientService) GetClients() ([]dto.Client, error) {
+
+	clientsResp := []dto.Client{}
+	clients, err := cs.clientRepository.List()
+	if err != nil {
+		return clientsResp, err
+	}
+
+	for _, v := range clients {
+		clientsResp = append(clientsResp, dto.NewClient(v.ID, v.Name, v.Email))
+	}
+
+	return clientsResp, nil
 }
