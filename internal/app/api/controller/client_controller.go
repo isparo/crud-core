@@ -15,6 +15,7 @@ type ClientService interface {
 	GetByID(id int) (*model.Client, error)
 	Delete(id int) error
 	Update(id int, name string, email string) error
+	GetClients() ([]model.Client, error)
 }
 
 type clientHandler struct {
@@ -131,4 +132,16 @@ func (ch clientHandler) Get(w http.ResponseWriter, r *http.Request) {
 
 func (ch clientHandler) List(w http.ResponseWriter, r *http.Request) {
 	log.Println("On List handler")
+
+	clients, err := ch.clientService.GetClients()
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(clients)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(clients)
 }

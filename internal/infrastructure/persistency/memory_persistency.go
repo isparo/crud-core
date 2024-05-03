@@ -70,3 +70,14 @@ func (r *inMemoryRepository) Update(client model.Client) error {
 
 	return nil
 }
+
+func (r *inMemoryRepository) List() ([]model.Client, error) {
+
+	clients := []model.Client{}
+
+	for _, v := range r.dataStorage {
+		clients = append(clients, v)
+	}
+
+	return clients, nil
+}

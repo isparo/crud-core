@@ -10,6 +10,7 @@ type ClientRepository interface {
 	GetByID(id int) (*model.Client, error)
 	Delete(id int) error
 	Update(client model.Client) error
+	List() ([]model.Client, error)
 }
 
 type clientService struct {
@@ -42,4 +43,8 @@ func (cs clientService) Update(id int, name string, email string) error {
 	client := model.NewClient(&id, name, email)
 
 	return cs.clientRepository.Update(client)
+}
+
+func (cs clientService) GetClients() ([]model.Client, error) {
+	return cs.clientRepository.List()
 }
