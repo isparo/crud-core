@@ -3,6 +3,7 @@ package persistency
 import (
 	"crud-core/internal/app/api/model"
 	"errors"
+	"log"
 	"sync"
 	"time"
 )
@@ -23,6 +24,9 @@ func (r *inMemoryRepository) Create(client model.Client) error {
 	defer r.mtx.Unlock()
 	id := int(time.Now().UnixNano())
 	client.ID = &id
+
+	log.Println("created: ", *client.ID)
+
 	r.dataStorage[*client.ID] = client
 
 	return nil
