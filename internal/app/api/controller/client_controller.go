@@ -32,7 +32,18 @@ func (ch clientHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
-		http.Error(w, "Error al decodificar el cuerpo de la solicitud JSON", http.StatusBadRequest)
+		//http.Error(w, "Error al decodificar el cuerpo de la solicitud JSON", http.StatusBadRequest)
+		errorMsg := struct {
+			Message string `json:"message"`
+			Code    int    `json:"status"`
+		}{
+			Message: "Error al decodificar el cuerpo de la solicitud JSON",
+			Code:    http.StatusBadRequest,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorMsg)
 		return
 	}
 

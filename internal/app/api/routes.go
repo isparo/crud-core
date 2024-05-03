@@ -10,7 +10,7 @@ func (api apiV1) LoadRoutes() {
 	log.Println("starting service")
 
 	http.HandleFunc("/api/v1/clients", api.handlerClient)
-	http.HandleFunc("/api/v1/clients/", api.handlerClient)
+	http.HandleFunc("/api/v1/clients/", api.handlerClient) // to pass path params
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
