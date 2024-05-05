@@ -42,6 +42,11 @@ func (cs clientService) GetByID(id int) (*dto.Client, error) {
 	return &dto.Client{client.ID, client.Name, client.Email}, nil
 }
 func (cs clientService) Delete(id int) error {
+
+	if err := cs.clientRepository.Delete(id); err != nil {
+		return err
+	}
+
 	return nil
 }
 func (cs clientService) Update(id int, name string, email string) error {

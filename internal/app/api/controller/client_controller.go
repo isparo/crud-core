@@ -58,6 +58,39 @@ func (ch clientHandler) Create(w http.ResponseWriter, r *http.Request) {
 func (ch clientHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	log.Println("On delete handler")
 
+	idPath := strings.TrimPrefix(r.URL.Path, "/api/v1/clients/")
+	id, err := strconv.Atoi(idPath)
+	if err != nil {
+		errorMsg := struct {
+			Message string `json:"message"`
+			Code    int    `json:"status"`
+		}{
+			Message: "wrong id value",
+			Code:    http.StatusBadRequest,
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorMsg)
+		return
+	}
+
+	err = ch.clientService.Delete(id)
+	if err != nil {
+		errorMsg := struct {
+			Message string `json:"message"`
+			Code    int    `json:"status"`
+		}{
+			Message: "Internal eror ",
+			Code:    http.StatusInternalServerError,
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(errorMsg)
+		return
+	}
+
+	w.WriteHeader(http.StatusAccepted)
+
 }
 
 func (ch clientHandler) Update(w http.ResponseWriter, r *http.Request) {
