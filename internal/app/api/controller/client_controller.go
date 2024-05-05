@@ -2,7 +2,9 @@ package controller
 
 import (
 	"crud-core/internal/app/api/controller/dto"
+	"crud-core/internal/shared/errorhandler"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
@@ -34,15 +36,7 @@ func (ch clientHandler) Create(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&data)
 	if err != nil {
-		//http.Error(w, "Error al decodificar el cuerpo de la solicitud JSON", http.StatusBadRequest)
-		errorMsg := struct {
-			Message string `json:"message"`
-			Code    int    `json:"status"`
-		}{
-			Message: "Error al decodificar el cuerpo de la solicitud JSON",
-			Code:    http.StatusBadRequest,
-		}
-
+		errorMsg := errorhandler.NewValidationError("Bad request", err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(errorMsg)
@@ -61,13 +55,7 @@ func (ch clientHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	idPath := strings.TrimPrefix(r.URL.Path, "/api/v1/clients/")
 	id, err := strconv.Atoi(idPath)
 	if err != nil {
-		errorMsg := struct {
-			Message string `json:"message"`
-			Code    int    `json:"status"`
-		}{
-			Message: "wrong id value",
-			Code:    http.StatusBadRequest,
-		}
+		errorMsg := errorhandler.NewBadRequestError("wrong id value", errors.New("invalid ID format"))
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(errorMsg)
@@ -100,13 +88,7 @@ func (ch clientHandler) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(idPath)
 
 	if err != nil {
-		errorMsg := struct {
-			Message string `json:"message"`
-			Code    int    `json:"status"`
-		}{
-			Message: "wrong id value",
-			Code:    http.StatusBadRequest,
-		}
+		errorMsg := errorhandler.NewBadRequestError("wrong id value", errors.New("invalid ID format"))
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(errorMsg)
@@ -133,14 +115,7 @@ func (ch clientHandler) Get(w http.ResponseWriter, r *http.Request) {
 
 	id, err := strconv.Atoi(idPath)
 	if err != nil {
-		errorMsg := struct {
-			Message string `json:"message"`
-			Code    int    `json:"status"`
-		}{
-			Message: "wrong id value",
-			Code:    http.StatusBadRequest,
-		}
-
+		errorMsg := errorhandler.NewBadRequestError("wrong id value", errors.New("invalid ID format"))
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(errorMsg)
