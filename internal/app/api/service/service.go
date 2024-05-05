@@ -39,7 +39,11 @@ func (cs clientService) GetByID(id int) (*dto.Client, error) {
 		return nil, err
 	}
 
-	return &dto.Client{client.ID, client.Name, client.Email}, nil
+	return &dto.Client{
+		ID:    client.ID,
+		Name:  client.Name,
+		Email: client.Email,
+	}, nil
 }
 func (cs clientService) Delete(id int) error {
 
