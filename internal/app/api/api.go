@@ -15,13 +15,20 @@ type clientHandler interface {
 	List(w http.ResponseWriter, r *http.Request)
 }
 
-type apiV1 struct {
-	clientHandler clientHandler
+type ProductHandler interface {
+	CreateProduct(w http.ResponseWriter, r *http.Request)
+	ListProducts(w http.ResponseWriter, r *http.Request)
 }
 
-func newAPIV1(clientHandler clientHandler) apiV1 {
+type apiV1 struct {
+	clientHandler clientHandler
+	prodHandler   ProductHandler
+}
+
+func newAPIV1(clientHandler clientHandler, prodHandler ProductHandler) apiV1 {
 	return apiV1{
 		clientHandler: clientHandler,
+		prodHandler:   prodHandler,
 	}
 }
 
@@ -30,6 +37,11 @@ func LoadAPI() {
 
 	clientService := service.NewClientService(clientRepo)
 	clientHandler := controller.NewClientHandler(clientService)
-	apiV1 := newAPIV1(clientHandler)
+
+	prodRepo := persistency.NewProductPersistency()
+	prodService := service.NewProductService(prodRepo)
+	prodHandler := controller.NewProductHandler(prodService)
+
+	apiV1 := newAPIV1(clientHandler, prodHandler)
 	apiV1.LoadRoutes()
 }

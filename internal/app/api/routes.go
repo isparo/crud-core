@@ -12,9 +12,22 @@ func (api apiV1) LoadRoutes() {
 	http.HandleFunc("/api/v1/clients", api.handlerClient)
 	http.HandleFunc("/api/v1/clients/", api.handlerClient) // to pass path params
 
+	http.HandleFunc("/api/v1/products", api.handleProducts)
+
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		log.Println("can not start service")
+	}
+}
+
+func (api apiV1) handleProducts(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodPost:
+		api.prodHandler.CreateProduct(w, r)
+	case http.MethodGet:
+		api.prodHandler.ListProducts(w, r)
+	default:
+		http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
 	}
 }
 
