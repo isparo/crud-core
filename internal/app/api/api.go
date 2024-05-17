@@ -20,6 +20,7 @@ type ProductHandler interface {
 	ListProducts(w http.ResponseWriter, r *http.Request)
 	GetProductByID(w http.ResponseWriter, r *http.Request)
 	DeleteProduct(w http.ResponseWriter, r *http.Request)
+	UpdateProduct(w http.ResponseWriter, r *http.Request)
 }
 
 type apiV1 struct {

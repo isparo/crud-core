@@ -31,6 +31,8 @@ func (api apiV1) handleProducts(w http.ResponseWriter, r *http.Request) {
 			api.prodHandler.GetProductByID(w, r)
 		case http.MethodDelete:
 			api.prodHandler.DeleteProduct(w, r)
+		case http.MethodPut:
+			api.prodHandler.UpdateProduct(w, r)
 		default:
 			http.Error(w, "Método no permitido", http.StatusMethodNotAllowed)
 		}

@@ -14,7 +14,8 @@ type ProductService interface {
 	Create(name string, price int) error
 	List() ([]dto.Product, error)
 	GetByID(id int) (*dto.Product, error)
-	DeleteClient(id int) error
+	DeleteProduct(id int) error
+	UpdateProduct(id int, price int, name string) error
 }
 
 type productHandler struct {
@@ -105,12 +106,37 @@ func (ph productHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = ph.prodService.DeleteClient(productID)
+	err = ph.prodService.DeleteProduct(productID)
 	if err != nil {
 		errorMsg := errorhandler.NewValidationError("Error: ", err)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(errorMsg)
+		return
+	}
+
+	w.WriteHeader(http.StatusAccepted)
+}
+
+func (ph productHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
+	id := strings.TrimPrefix(r.URL.Path, "/api/v1/products/")
+	productID, err := strconv.Atoi(id)
+	if err != nil {
+		errorMsg := errorhandler.NewValidationError("Bad request", err)
+		w.Header().Set("Content-Type", "application-json")
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorMsg)
+		return
+	}
+
+	var product dto.Product
+	json.NewDecoder(r.Body).Decode(&product)
+
+	err = ph.prodService.UpdateProduct(productID, product.Price, product.Name)
+	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(`{msg: error updating product}`)
 		return
 	}
 

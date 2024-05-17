@@ -69,3 +69,16 @@ func (pp *productPersistency) Delete(id int) error {
 
 	return nil
 }
+
+func (pp *productPersistency) Update(product model.Product) error {
+	pp.mtx.Lock()
+	defer pp.mtx.Unlock()
+
+	if _, ok := pp.dataStorage[*product.ID]; !ok {
+		return errors.New("product not found")
+	}
+
+	pp.dataStorage[*product.ID] = product
+
+	return nil
+}

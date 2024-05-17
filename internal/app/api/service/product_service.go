@@ -11,6 +11,7 @@ type ProductRepository interface {
 	List() []model.Product
 	GetByID(id int) (*model.Product, error)
 	Delete(id int) error
+	Update(product model.Product) error
 }
 
 type productService struct {
@@ -59,8 +60,21 @@ func (ps productService) GetByID(id int) (*dto.Product, error) {
 	return &product, nil
 }
 
-func (ps productService) DeleteClient(id int) error {
+func (ps productService) DeleteProduct(id int) error {
 	err := ps.prodRepo.Delete(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (ps productService) UpdateProduct(id int, price int, name string) error {
+
+	product := model.NewProduct(name, price)
+	product.ID = &id
+
+	err := ps.prodRepo.Update(product)
 	if err != nil {
 		return err
 	}
