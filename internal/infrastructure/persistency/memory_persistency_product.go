@@ -2,6 +2,7 @@ package persistency
 
 import (
 	"crud-core/internal/app/api/model"
+	"errors"
 	"log"
 	"sync"
 	"time"
@@ -42,4 +43,29 @@ func (pp *productPersistency) List() []model.Product {
 	}
 
 	return products
+}
+
+func (pp *productPersistency) GetByID(id int) (*model.Product, error) {
+	pp.mtx.Lock()
+	defer pp.mtx.Unlock()
+
+	if _, ok := pp.dataStorage[id]; !ok {
+		return nil, errors.New("product not found")
+	}
+
+	prod := pp.dataStorage[id]
+
+	return &prod, nil
+}
+func (pp *productPersistency) Delete(id int) error {
+	pp.mtx.Lock()
+	defer pp.mtx.Unlock()
+
+	if _, ok := pp.dataStorage[id]; !ok {
+		return errors.New("client not found")
+	}
+
+	delete(pp.dataStorage, id)
+
+	return nil
 }
